@@ -1,0 +1,12 @@
+{
+  "name": "camlow325-grafanadash",
+  "version": "0.0.1",
+  "author": "camlow325",
+  "summary": "Installs graphite and grafana",
+  "license": "Apache 2.0",
+  "source": "https://github.com/camlow325/puppet-grafanadash",
+  "project_page": "https://github.com/camlow325/puppet-grafanadash",
+  "issues_url": "",
+  "dependencies": []
+}
+
