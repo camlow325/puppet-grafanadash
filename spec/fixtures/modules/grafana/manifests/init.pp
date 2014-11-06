@@ -1,0 +1,5 @@
+class grafana (
+  $symlink,
+  $datasources
+) {
+}

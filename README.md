@@ -3,77 +3,76 @@
 #### Table of Contents
 
 1. [Overview](#overview)
-2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with grafanadash](#setup)
+2. [Setup - The basics of getting started with grafanadash](#setup)
     * [What grafanadash affects](#what-grafanadash-affects)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with grafanadash](#beginning-with-grafanadash)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+    * [Usage](#usage)
+3. [Limitations - OS compatibility, etc.](#limitations)
 
 ## Overview
 
-A one-maybe-two sentence summary of what the module does/what problem it solves.
-This is your 30 second elevator pitch for your module. Consider including
-OS/Puppet version it works with.
+This is a simple dev module for installing graphite and grafana on a single node.
+It was only successfully tested with Puppet 3.7.1 and CentOS 6.
 
-## Module Description
-
-If applicable, this section should have a brief description of the technology
-the module integrates with and what that integration enables. This section
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?"
-
-If your module has a range of functionality (installation, configuration,
-management, etc.) this is the time to mention it.
+This is basically derived from what the cprice404/grafanadash module does
+(https://forge.puppetlabs.com/cprice404/grafanadash) with the exception of no
+initial support for setting up elasticsearch.  You're probably better off using
+cprice404/grafanadash as this module is purely an experiment.
 
 ## Setup
 
 ### What grafanadash affects
 
-* A list of files, packages, services, or operations that the module will alter,
-  impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form.
+* Sets selinux to 'permissive'.
+* Installs EPEL repo, graphite, related python packages needed by graphite, and
+  grafana.  Sets up Apache Virtual Hosts for graphite and grafana.
 
-### Setup Requirements **OPTIONAL**
+### Usage
 
-If your module requires anything extra before setting up (pluginsync enabled,
-etc.), mention it here.
+To install with default parameters:
 
-### Beginning with grafanadash
+```puppet
+    class { 'grafanadash::dev': }
+```
 
-The very basic steps needed for a user to get the module up and running.
+To install with custom parameters:
 
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you may wish to include an additional section here: Upgrading
-(For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
-
-## Usage
-
-Put the classes, types, and resources for customizing, configuring, and doing
-the fancy stuff with your module here.
-
-## Reference
-
-Here, list the classes, types, providers, facts, etc contained in your module.
-This section should include all of the under-the-hood workings of your module so
-people know what the module is touching on their system but don't need to mess
-with things. (We are working on automating this section!)
+```puppet
+    class { 'grafanadash::dev':
+      apache_servername           => 'myhost.mydomain.com',
+      grafana_apache_port         => 9998,
+      graphite_apache_port        => 9997,
+      graphite_line_receiver_port => 9996,
+      graphite_url                => 'http://myhost.mydomain.com:9997'
+    }
+```
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc.
+Sets selinux to permissive rather than just configuring the minimal rules needed
+for applications to run with selinux still being enforced.
 
-## Development
+After the initial installation, requests to the Graphite web app -- including
+requests made by the Grafana front-end -- may encounter errors.  In the
+/opt/graphite/storage/log/webapp/graphite_error.log a "DatabaseError: database
+is locked" error may be seen.  After restarting the Apache web server --
+possibly more than once -- this problem seems to disappear.
 
-Since your module is awesome, other users will want to play with it. Let them
-know what the ground rules for contributing are.
+This module does not work on CentOS 7.0.1406 for three reasons:
 
-## Release Notes/Contributors/Etc **Optional**
+1) An "Error: comparison of String with 7 failed at
+   ...selinux/manifests/params.pp" message occurs.  This is due to some missing
+   logic in the version string checking in the selinux module's params.pp class.
+   This is a known issue in the selinux module.  A pull request to address this
+   is at https://github.com/spiette/puppet-selinux/pull/13/files.
 
-If you aren't using changelog, put your release notes here (though you should
-consider using changelog). You may also add any additional sections you feel are
-necessary or important to include here. Please use the `## ` header.
+2) A couple of the dependencies that the graphite module is looking for are
+   not satisfied - Django14 and python-sqlite2.  An issue about this was filed
+   in the puppet-graphite project -
+   https://github.com/echocat/puppet-graphite/issues/106.
+
+3) Assuming one were to workaround the second problem by installing a django
+   1.6 version from EPEL, there is a problem in the latest released package
+   of graphite-web, 0.9.12, with running under django 1.6.  A fix for that
+   problem was integrated to graphite-web master at
+   https://github.com/graphite-project/graphite-web/commit/fc3f018544c19b90cc63797d18970a4cc27ef2ad
+   but that fix has not been included in a later release of graphite-web.

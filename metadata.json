@@ -1,12 +1,27 @@
 {
   "name": "camlow325-grafanadash",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "camlow325",
   "summary": "Installs graphite and grafana",
   "license": "Apache 2.0",
   "source": "https://github.com/camlow325/puppet-grafanadash",
   "project_page": "https://github.com/camlow325/puppet-grafanadash",
   "issues_url": "",
-  "dependencies": []
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6"
+      ]
+    }
+  ],
+  "dependencies": [
+    { "name": "puppetlabs/apache", "version_requirement": ">=1.1.1"},
+    { "name": "spiette/selinux", "version_requirement": ">=0.5.4"},
+    { "name": "stahnma/epel", "version_requirement": ">=1.0.0" },
+    { "name": "dwerder/graphite", "version_requirement": ">=5.5.0"},
+    { "name": "bfraser/grafana", "version_requirement": ">=0.2.2"},
+    { "name": "gini/archive", "version_requirement": ">= 0.2.1"}
+  ]
 }
 
