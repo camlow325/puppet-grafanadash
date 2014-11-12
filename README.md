@@ -5,8 +5,15 @@
 1. [Overview](#overview)
 2. [Setup - The basics of getting started with grafanadash](#setup)
     * [What grafanadash affects](#what-grafanadash-affects)
-    * [Usage](#usage)
-3. [Limitations - OS compatibility, etc.](#limitations)
+3. [Usage](#usage)
+    * [Classes and Defined Types](#classes-and-defined-types)
+         * [Class: grafanadash::dev](#class-grafanadashdev)
+    * [Examples](#examples)
+4. [Reference](#reference)
+    * [Classes](#classes)
+        * [Public Classes](#public-classes)
+        * [Private Classes](#private-classes)
+5. [Limitations - OS compatibility, etc.](#limitations)
 
 ## Overview
 
@@ -26,7 +33,40 @@ cprice404/grafanadash as this module is purely an experiment.
 * Installs EPEL repo, graphite, related python packages needed by graphite, and
   grafana.  Sets up Apache Virtual Hosts for graphite and grafana.
 
-### Usage
+## Usage
+
+### Classes and Defined Types
+
+#### Class: `grafanadash::dev`
+
+Installs Graphite and Grafana on a single host, running under Apache.
+
+##### `apache_servername`
+
+ServerName to add to the Apache Virtual Host configurations for Graphite and
+Grafana vhost.  Defaults to ::fqdn of the host on which the packages are being
+installed.
+
+##### `grafana_apache_port`
+
+Port on the Apache server under which the Grafana web application should be
+hosted.  Defaults to 10000.
+
+##### `graphite_apache_port`
+
+Port on the Apache server under which the Graphite web application should be
+hosted.  Defaults to 80.
+
+##### `graphite_line_receiver_port`
+
+Port of the Graphite line receiver.  Defaults to 2003.
+
+##### `graphite_url`
+
+Port of the Graphite web server interface - used by Grafana's config.js to poll
+Graphite for data.  Defaults to "http://${::fqdn}"
+
+### Examples
 
 To install with default parameters:
 
@@ -46,16 +86,26 @@ To install with custom parameters:
     }
 ```
 
+## Reference
+
+### Classes
+
+#### Public Classes
+
+* [`grafanadash::dev`](#class-grafanadashdev): Installs Graphite and Grafana
+  under a single host, running under Apache.
+
+#### Private Classes
+
+* `grafanadash::grafana_apache`: Configures an Apache Virtual Host for a
+   Grafana server and SHOULD NOT be called directly.
+* `grafanadash::graphite_apache`: Configures an Apache Virtual Host for a
+   Graphite server and SHOULD NOT be called directly.
+
 ## Limitations
 
 Sets selinux to permissive rather than just configuring the minimal rules needed
 for applications to run with selinux still being enforced.
-
-After the initial installation, requests to the Graphite web app -- including
-requests made by the Grafana front-end -- may encounter errors.  In the
-/opt/graphite/storage/log/webapp/graphite_error.log a "DatabaseError: database
-is locked" error may be seen.  After restarting the Apache web server --
-possibly more than once -- this problem seems to disappear.
 
 This module does not work on CentOS 7.0.1406 for three reasons:
 

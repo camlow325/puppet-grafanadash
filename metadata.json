@@ -1,6 +1,6 @@
 {
   "name": "camlow325-grafanadash",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "camlow325",
   "summary": "Installs graphite and grafana",
   "license": "Apache 2.0",

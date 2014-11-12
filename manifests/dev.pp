@@ -42,9 +42,8 @@ class grafanadash::dev (
   $grafana_apache_port         = $grafanadash::params::grafana_apache_port,
   $graphite_apache_port        = $grafanadash::params::graphite_apache_port,
   $graphite_line_receiver_port = $grafanadash::params::graphite_line_receiver_port,
-  $graphite_url                = $grafanadash::params::graphite_url,
+  $graphite_url                = $grafanadash::params::graphite_url
 ) inherits grafanadash::params {
-
   class { 'epel': } ->
   class { 'selinux':
     mode => 'permissive'
@@ -61,7 +60,7 @@ class grafanadash::dev (
   # /opt/grafana-[version]/grafana-[version].  See
   # https://github.com/bfraser/puppet-grafana/pull/13.  Managing symlink locally
   # for now so that it points to where the archive is installed.  config.js is
-  # still being installed to /opt/grafana-[version] so creating a symlink to 
+  # still being installed to /opt/grafana-[version] so creating a symlink to
   # that from /opt/grafana-[version]/grafana-[version] so that it can be
   # retrieved from the base directory of the archive.  Should be able to remove
   # the symlink_name file resources and let symlink = true (default) as a

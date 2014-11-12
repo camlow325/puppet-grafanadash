@@ -1,6 +1,6 @@
-# == Class: grafanadash::graphite_apache
+# == Class: grafanadash::grafana_apache
 #
-# This class configures the Apache Virtual Host for a Grafana server and
+# This class configures an Apache Virtual Host for a Grafana server and
 # SHOULD NOT be called directly.
 #
 # === Parameters
